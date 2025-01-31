@@ -1,0 +1,60 @@
+<% layout("/layouts/boilerplate.ejs") %>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="position-relative overflow-hidden rounded-4 shadow-lg">
+                <img src="<%= al.image.url %>" class="w-100" alt="listing_image" style="height: 400px; object-fit: cover;">
+                <div class="p-4 text-center bg-white">
+                    <h2 class="fw-bold text-dark mb-2"><%= al.title %></h2>
+                    <p class="text-muted mb-3 fs-5"><%= al.description %></p>
+                    <h3 class="text-success fw-semibold">&#8377;<%= al.price.toLocaleString("en-IN") %></h3>
+                    <p class="text-secondary mb-1"><i class="bi bi-geo-alt-fill"></i> <%= al.location %>, <%= al.country %></p>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a href="/listings/<%= al._id %>/edit" class="btn btn-warning px-4">Edit Listing</a>
+                        <form action="/listings/<%= al._id %>?_method=DELETE" method="post">
+                            <button class="btn btn-danger px-4">Delete Listing</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8 text-center">
+            <h3 class="fw-bold text-dark">Leave a Review</h3>
+            <form action="/listings/<%= al.id %>/review" method="post" class="needs-validation" novalidate>
+                <div class="mb-3 text-start">
+                    <label for="rating" class="form-label">Rating</label>
+                    <input type="range" min="1" max="5" id="rating" name="review[rating]" class="form-range">
+                </div>
+                <div class="mb-3 text-start">
+                    <label for="comment" class="form-label">Comment</label>
+                    <textarea id="comment" name="review[comment]" class="form-control" rows="3" required></textarea>
+                    <div class="invalid-feedback">Review can't be empty!!</div>
+                </div>
+                <button class="btn btn-dark px-5">Submit</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <h3 class="fw-bold text-dark text-center">Reviews</h3>
+            <div class="mt-4">
+                <% for (review of al.reviews) { %>
+                <div class="d-flex align-items-start gap-3 p-3 border-bottom">
+                    <div>
+                        <h5 class="fw-bold text-primary">John Doe</h5>
+                        <p class="text-muted"><%= review.comment %></p>
+                        <p class="fw-semibold text-warning"><%= review.rating %> ★</p>
+                    </div>
+                    <form method="post" action="/listings/<%= al._id %>/review/<%= review._id %>?_method=DELETE">
+                        <button class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
