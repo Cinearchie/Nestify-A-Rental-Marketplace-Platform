@@ -1,3 +1,7 @@
+
+if(process.env.NODE_ENV != "production"){
+    require('dotenv').config();
+}
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -12,10 +16,13 @@ const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const {reviewSchema} = require("./schema.js");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");
 const passport = require("passport");
 const localStrategy = require("passport-local");
 const User = require("./models/user.js");
+const multer = require('multer')
+const upload = multer({dest: 'uploads/'})
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"));
 app.use(express.urlencoded({extended:true}));
@@ -23,7 +30,8 @@ app.use(methodOverride("_method"));
 app.engine('ejs',ejsMate);
 app.use(express.static(path.join(__dirname,"/public")));
 
-const mongo_url = 'mongodb://127.0.0.1:27017/nestify';
+
+const dbUrl = process.env.ATLASDB;
 main()
 .then(()=>{
     console.log("connected to DB");
@@ -32,12 +40,23 @@ main()
     console.log(err);
 })
 async function main(){
-    await mongoose.connect(mongo_url);
+    await mongoose.connect(dbUrl);
 }
 
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+        secret: process.env.MONGO_SECRET,
+    },
+    touchAfter: 24 * 3600
+})
 
+store.on("error" , ()=> {
+    console.log("Error in mongo Session store",err);
+})
 const sessionOptions = {
-    secret: "b7X$zP9w!KdQvR2LmN3Y",
+    store,
+    secret: process.env.MONGO_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -47,9 +66,6 @@ const sessionOptions = {
     httpOnly: true
 }
 
-app.get("/",(req,res) =>{
-    res.send("Its working");
-})
 
 
 app.use(session(sessionOptions))

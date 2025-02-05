@@ -84,3 +84,21 @@ body{
     background-color: #34DBFA !important;
     border: none !important;
 }
+
+.tax_info{
+    display: none;
+}
+
+.listings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2rem 5rem 1rem 5rem; /* Adjust spacing */
+}
+
+.tax_toggle {
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 3.5rem;
+    padding: 1rem;
+}
